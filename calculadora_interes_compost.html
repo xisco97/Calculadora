@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora d'interès compost</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 24px;
+      line-height: 1.5;
+      background: #f7f7f7;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 24px;
+      padding: 16px;
+      background: #eef6ff;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+    .small {
+      color: #444;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Calculadora d'interès compost</h1>
+
+    <label for="aportacio">Aportació mensual (€)</label>
+    <input type="number" id="aportacio" placeholder="Ex: 200" min="0" step="0.01" />
+
+    <label for="interes">Interès anual esperat (%)</label>
+    <input type="number" id="interes" placeholder="Ex: 7" step="0.01" />
+
+    <label for="anys">Anys d'aportació</label>
+    <input type="number" id="anys" placeholder="Ex: 20" min="0" step="1" />
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div class="result" id="resultat">
+      Introdueix les dades i prem <strong>Calcular</strong>.
+    </div>
+
+    <div class="small">
+      Fórmula assumida: aportacions mensuals al final de cada mes i capitalització mensual.
+    </div>
+  </div>
+
+  <script>
+    function formatEUR(value) {
+      return new Intl.NumberFormat('ca-ES', {
+        style: 'currency',
+        currency: 'EUR'
+      }).format(value);
+    }
+
+    function calcular() {
+      const aportacio = parseFloat(document.getElementById('aportacio').value);
+      const interesAnual = parseFloat(document.getElementById('interes').value);
+      const anys = parseFloat(document.getElementById('anys').value);
+      const resultat = document.getElementById('resultat');
+
+      if (isNaN(aportacio) || isNaN(interesAnual) || isNaN(anys) || aportacio < 0 || anys < 0) {
+        resultat.innerHTML = "Revisa els valors introduïts.";
+        return;
+      }
+
+      const i = (interesAnual / 100) / 12;
+      const n = anys * 12;
+
+      let valorFinal;
+      if (i === 0) {
+        valorFinal = aportacio * n;
+      } else {
+        valorFinal = aportacio * (((1 + i) ** n - 1) / i);
+      }
+
+      const totalAportat = aportacio * n;
+      const interessosGenerats = valorFinal - totalAportat;
+
+      resultat.innerHTML = `
+        <div><strong>Capital final:</strong> ${formatEUR(valorFinal)}</div>
+        <div><strong>Total aportat:</strong> ${formatEUR(totalAportat)}</div>
+        <div><strong>Interessos generats:</strong> ${formatEUR(interessosGenerats)}</div>
+      `;
+    }
+  </script>
+</body>
+</html>
